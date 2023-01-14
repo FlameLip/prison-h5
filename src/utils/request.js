@@ -1,9 +1,3 @@
-/*
- * @Descripttion:
- * @Version: 1.0
- * @Author: jianlvqi jianlvqi@jxcc.com
- * @Date: 2022-10-31 10:42:50
- */
 import axios from 'axios'
 import store from '@/store'
 import { Toast } from 'vant'

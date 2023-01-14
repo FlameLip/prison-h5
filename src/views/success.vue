@@ -1,9 +1,3 @@
-<!--
- * @Descripttion:
- * @Version: 1.0
- * @Author: jianlvqi jianlvqi@jxcc.com
- * @Date: 2022-11-01 13:21:19
--->
 <template>
   <div class="finish-container">
     <van-icon name="checked" color="#34e154" />
@@ -16,7 +10,7 @@
   width: 100vw;
   height: 100vh;
   display: flex;
-  justify-content: start;
+  justify-content: flex-start;
   align-items: center;
   flex-direction: column;
   i {

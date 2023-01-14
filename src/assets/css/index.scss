@@ -4,7 +4,38 @@
 html,
 body .app {
   color: #333333;
-  font-family: Arial, Helvetica, 'STHeiti STXihei', 'Microsoft YaHei', Tohoma, sans-serif;
+  font-family: PingFangSC-Regular, Arial, Helvetica, 'STHeiti STXihei', 'Microsoft YaHei', Tohoma, sans-serif !important;
   background-color: $background-color;
 }
+h1,h2,h3,h4,h5 {
+  margin: 0;
+  padding: 0;
+}
+.van-cell {
+  padding: 0;
+  margin-bottom: 40px;
+  box-sizing: border-box;
+  font-size: 30px;
+  height: 30px;
+  .van-cell__title {
+    height: 36px;
+    line-height: 36px;
+    color: #878787;
+    font-weight: 400;
+  }
+  .van-cell__value {
+    height: 36px;
+    line-height: 36px;
+    color: #000;
+  }
+}
 
+.submit-btn {
+  margin-top: 150px;
+  button {
+    height: 90px;
+    border-radius: 10px;
+    font-size: 32px;
+    font-weight: 600;
+  }
+}

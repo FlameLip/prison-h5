@@ -1,8 +1,8 @@
 {
-  "name": "vue-h5-template",
+  "name": "prison-meetting",
   "version": "2.1.0",
-  "description": "A vue h5 template with Vant UI",
-  "author": "Sunnie <sunniejs@163.com>",
+  "description": "prison booking meetting",
+  "author": "Lip <18070568168@163.com>",
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve",

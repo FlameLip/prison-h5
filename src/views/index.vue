@@ -1,271 +1,161 @@
-<!--
- * @Descripttion:
- * @Version: 1.0
- * @Author: jianlvqi jianlvqi@jxcc.com
- * @Date: 2022-10-31 10:42:50
--->
 <template>
-  <div class="app-container">
-    <!-- <van-sticky> -->
-    <h1 class="page-title">食堂用餐人员满意度评测表</h1>
-    <!-- </van-sticky> -->
-    <div class="form-container">
-      <van-form @submit="onSubmit" scroll-to-error :show-error="false">
-        <van-field
-          v-model="formData.phone"
-          name="phone"
-          type="tel"
-          clearable
-          label="手机号"
-          placeholder="请输入手机号"
-          @input="phoneInput"
-          :rules="[{ pattern: phonePattern, message: '请输入正确的手机号' }]"
-        />
-        <van-field
-          readonly
-          clickable
-          name="refectory"
-          :value="formData.refectory"
-          label="食堂名称"
-          placeholder="点击选择食堂"
-          @click-input="refectoryClick"
-          :rules="[{ required: true, message: '请选择食堂' }]"
-        />
-        <van-popup v-model="showPicker" position="bottom">
-          <van-picker show-toolbar :columns="columns" @confirm="onConfirm" @cancel="showPicker = false" />
-        </van-popup>
-        <div class="simulate-label">1. 您对食堂饭菜质量的满意度？</div>
-        <van-field name="quality" label="" :rules="[{ required: true, message: '请勾选' }]">
-          <template #input>
-            <van-radio-group v-model="formData.quality" direction="horizontal">
-              <van-radio :name="100">很满意</van-radio>
-              <van-radio :name="85">满意</van-radio>
-              <van-radio :name="70">一般</van-radio>
-              <van-radio :name="50">不满意</van-radio>
-            </van-radio-group>
-          </template>
-        </van-field>
-        <div class="simulate-label">2. 您认为食堂的饭菜种类如何？</div>
-        <van-field name="kind" label="" :rules="[{ required: true, message: '请勾选' }]">
-          <template #input>
-            <van-radio-group v-model="formData.kind" direction="horizontal">
-              <van-radio :name="100">十分丰富</van-radio>
-              <van-radio :name="85">丰富</van-radio>
-              <van-radio :name="70">一般</van-radio>
-              <van-radio :name="50">太少</van-radio>
-            </van-radio-group>
-          </template>
-        </van-field>
-        <div class="simulate-label">3. 您觉得食堂的饭菜荤素搭配怎么样？</div>
-        <van-field name="collocation" label="" :rules="[{ required: true, message: '请勾选' }]">
-          <template #input>
-            <van-radio-group v-model="formData.collocation" direction="horizontal">
-              <van-radio :name="100">非常好</van-radio>
-              <van-radio :name="85">很好</van-radio>
-              <van-radio :name="70">一般</van-radio>
-              <van-radio :name="50">待改进</van-radio>
-            </van-radio-group>
-          </template>
-        </van-field>
-        <div class="simulate-label">4. 您对食堂饭菜的分量？</div>
-        <van-field name="weight" label="" :rules="[{ required: true, message: '请勾选' }]">
-          <template #input>
-            <van-radio-group v-model="formData.weight" direction="horizontal">
-              <van-radio :name="100">很满意</van-radio>
-              <van-radio :name="85">满意</van-radio>
-              <van-radio :name="70">一般</van-radio>
-              <van-radio :name="50">不满意</van-radio>
-            </van-radio-group>
-          </template>
-        </van-field>
-        <div class="simulate-label">5. 您对食堂卫生状况的满意度？</div>
-        <van-field name="hygiene" label="" :rules="[{ required: true, message: '请勾选' }]">
-          <template #input>
-            <van-radio-group v-model="formData.hygiene" direction="horizontal">
-              <van-radio :name="100">很满意</van-radio>
-              <van-radio :name="85">满意</van-radio>
-              <van-radio :name="70">一般</van-radio>
-              <van-radio :name="50">不满意</van-radio>
-            </van-radio-group>
-          </template>
-        </van-field>
-        <div class="simulate-label">6. 您觉得食堂就餐环境怎么样？</div>
-        <van-field name="environment" label="" :rules="[{ required: true, message: '请勾选' }]">
-          <template #input>
-            <van-radio-group v-model="formData.environment" direction="horizontal">
-              <van-radio :name="100">很满意</van-radio>
-              <van-radio :name="85">满意</van-radio>
-              <van-radio :name="70">一般</van-radio>
-              <van-radio :name="50">不满意</van-radio>
-            </van-radio-group>
-          </template>
-        </van-field>
-        <div class="simulate-label">7. 您对食堂人员的服务态度？</div>
-        <van-field name="service" label="" :rules="[{ required: true, message: '请勾选' }]">
-          <template #input>
-            <van-radio-group v-model="formData.service" direction="horizontal">
-              <van-radio :name="100">很满意</van-radio>
-              <van-radio :name="85">满意</van-radio>
-              <van-radio :name="70">一般</van-radio>
-              <van-radio :name="50">不满意</van-radio>
-            </van-radio-group>
-          </template>
-        </van-field>
-        <div class="simulate-label">8. 您认为现在食堂情况较以前有无进步？</div>
-        <van-field name="progress" label="" :rules="[{ required: true, message: '请勾选' }]">
-          <template #input>
-            <van-radio-group v-model="formData.progress" direction="horizontal">
-              <van-radio :name="100">进步很大</van-radio>
-              <van-radio :name="85">有进步</van-radio>
-              <van-radio :name="70">没进步</van-radio>
-              <van-radio :name="50">退步</van-radio>
-            </van-radio-group>
-          </template>
-        </van-field>
-        <div class="simulate-label">9. 您对目前食堂的满意度打几分？</div>
-        <van-field name="fraction" label="" :rules="[{ required: true, message: '请勾选' }]">
-          <template #input>
-            <van-radio-group v-model="formData.fraction" direction="horizontal">
-              <van-radio :name="95">90-100</van-radio>
-              <van-radio :name="85">80-90</van-radio>
-              <van-radio :name="75">70-80</van-radio>
-              <van-radio :name="65">60-70</van-radio>
-              <van-radio :name="50">60以下</van-radio>
-            </van-radio-group>
-          </template>
-        </van-field>
-        <div class="simulate-label">10. 最不满意的地方</div>
-        <van-field
-          v-model="formData.content"
-          name="content"
-          rows="2"
-          autosize
-          type="textarea"
-          maxlength="250"
-          placeholder="请输入"
-          show-word-limit
-        />
-        <div class="simulate-label">11. 除此之外，您还有什么意见和建议</div>
-        <van-field
-          name="propose"
-          v-model="formData.propose"
-          rows="2"
-          autosize
-          type="textarea"
-          maxlength="250"
-          placeholder="请输入"
-          show-word-limit
-        />
-        <div class="submit-button">
-          <van-button round block type="info" native-type="submit">提交</van-button>
+  <div class="page-container">
+    <div class="member-base-info">
+      <div class="upload-box">
+        <van-uploader :max-count="1" :after-read="afterRead" />
+      </div>
+      <div class="base-box">
+        <div>
+          <div class="info-item">
+            <span>姓名</span>
+            <span>张峰峰</span>
+          </div>
+          <div class="info-item">
+            <span>手机</span>
+            <span>13784372318</span>
+          </div>
         </div>
-      </van-form>
+        <div class="edit-box">
+          <van-icon name="edit" />
+          <span>编辑信息</span>
+        </div>
+      </div>
+    </div>
+    <div class="fx-info">
+      <div class="title-box">
+        <img src="../assets/img/avator.png" />
+        <h3>家属信息</h3>
+      </div>
+      <div class="cell-box">
+        <van-cell title="家属姓名" :border="false" value="张向阳" />
+        <van-cell title="家属关系" :border="false" value="父子" />
+        <van-cell title="所在单位" :border="false" value="深圳监狱" />
+      </div>
+    </div>
+    <div class="submit-btn">
+      <van-button block type="info" native-type="submit">申请会见</van-button>
+    </div>
+    <div class="apply-list-box">
+      <span>查看我的申请记录</span>
+      <van-icon name="arrow" />
     </div>
   </div>
 </template>
 
 <script>
-import request from '@/utils/request'
 export default {
-  name: 'AppLayout',
   data() {
-    return {
-      formData: {
-        // phone: '13698039651',
-        phone: '',
-        refectory: '',
-        quality: '',
-        kind: '',
-        collocation: '',
-        weight: '',
-        hygiene: '',
-        environment: '',
-        service: '',
-        progress: '',
-        fraction: '',
-        content: '',
-        propose: '',
-        name: ''
-      },
-      showPicker: false,
-      columns: [],
-      phonePattern: /^1(3\d|4[5-9]|5[0-35-9]|6[567]|7[0-8]|8\d|9[0-35-9])\d{8}$/
-    }
+    return {}
   },
-
   methods: {
-    async onSubmit(values) {
-      const res = await request({
-        url: '/api/insert',
-        method: 'post',
-        data: { ...values, ...{ name: this.formData.name } }
-      })
-      if (res.msg === 'success') {
-        // this.$notify({ type: 'success', message: '提交成功！谢谢您！' })
-        this.$router.push('/finish')
-      } else {
-        this.$notify({ type: 'warning', message: '不好意思，提交失败！请稍后再试！' })
-      }
-    },
-    onConfirm(value) {
-      this.formData.refectory = value
-      this.showPicker = false
-    },
-    async phoneInput() {
-      if (!this.formData.phone || !this.phonePattern.test(this.formData.phone)) {
-        this.columns = []
-        this.formData.refectory = ''
-        return
-      }
-      const res = await request({
-        url: '/api/check',
-        method: 'post',
-        data: {
-          phoneNumber: this.formData.phone
-        }
-      })
-      if (res.refectory) {
-        this.columns = res.refectory.split(',')
-        this.formData.name = res.name
-      } else {
-        this.$notify({ type: 'warning', message: '手机号码输入有误，让联系数字化部门更改号码' })
-      }
-    },
-    refectoryClick() {
-      if (!this.columns.length) return this.$notify({ type: 'warning', message: '请先输入正确的手机号' })
-      this.showPicker = true
+    afterRead(file) {
+      // 此时可以自行将文件上传至服务器
+      console.log(file)
     }
   }
 }
 </script>
 
 <style lang="scss" scoped>
-.app-container {
-  width: 100%;
-  height: 100%;
-  background-color: #fff;
-  .page-title {
-    text-align: center;
-    margin: 0;
-    padding: 12px 0 12px 0;
-    font-size: 24px;
+.page-container {
+  box-sizing: border-box;
+  height: 100vh;
+  background-color: #f8f8f8;
+
+  .member-base-info {
+    padding: 52px 40px;
+    display: flex;
     background-color: #fff;
-  }
-  .form-container {
-    padding-bottom: 75px;
-    .simulate-label {
-      padding: 12px 16px 0;
-      font-size: 14px;
-      font-weight: bold;
+    .upload-box {
+      margin-right: 36px;
+      ::v-deep .van-uploader__upload {
+        width: 196px;
+        height: 274px;
+      }
     }
-    .submit-button {
-      width: 100%;
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      padding: 12px 24px 12px 24px;
-      box-sizing: border-box;
-      background-color: #fff;
+    .base-box {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      width: 58%;
+      .info-item {
+        align-self: flex-start;
+        display: flex;
+        align-items: center;
+        margin-bottom: 28px;
+        span {
+          display: block;
+          &:nth-of-type(1) {
+            background: #deeeff;
+            border-radius: 8px;
+            text-align: center;
+            line-height: 42px;
+            width: 92px;
+            margin-right: 24px;
+            font-size: 24px;
+            color: #2587eb;
+          }
+          &:nth-of-type(2) {
+            font-size: 34px;
+            color: #4a4a4a;
+            font-weight: 600;
+          }
+        }
+      }
+      .edit-box {
+        align-self: flex-end;
+        font-size: 28px;
+        color: #2587eb;
+        line-height: 32px;
+        height: 32px;
+        span {
+          margin-left: 14px;
+        }
+      }
+    }
+  }
+  .fx-info {
+    background: #fff;
+    padding: 38px 40px 12px 40px;
+    margin-top: 16px;
+    .title-box {
+      border-bottom: 1px solid rgba(226, 226, 226, 1);
+      display: flex;
+      align-items: center;
+      padding-bottom: 24px;
+      img {
+        width: 40px;
+        height: 40px;
+      }
+      h3 {
+        height: 40px;
+        margin-left: 12px;
+        font-size: 32px;
+        color: #2587eb;
+        line-height: 32px;
+        font-weight: 600;
+        margin-top: 6px;
+      }
+    }
+    .cell-box {
+      margin-top: 45px;
+    }
+  }
+  .submit-btn {
+    padding: 0 50px;
+  }
+  .apply-list-box {
+    margin-top: 50px;
+    font-size: 28px;
+    color: #2587eb;
+    line-height: 28px;
+    height: 28px;
+    font-weight: 400;
+    text-align: center;
+    display: flex;
+    justify-content: center;
+    span {
+      margin-right: 6px;
     }
   }
 }

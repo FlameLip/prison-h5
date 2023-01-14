@@ -1,9 +1,3 @@
-/*
- * @Descripttion:
- * @Version: 1.0
- * @Author: jianlvqi jianlvqi@jxcc.com
- * @Date: 2022-10-31 10:42:50
- */
 /**
  * 基础路由
  * @type { *[] }
@@ -16,26 +10,60 @@ export const constantRouterMap = [
       title: '首页',
       keepAlive: false
     }
-    // children: [
-    //   {
-    //     path: '/home',
-    //     name: 'Home',
-    //     component: () => import('@/views/home/index'),
-    //     meta: { title: '首页', keepAlive: false }
-    //   },
-    //   {
-    //     path: '/about',
-    //     name: 'About',
-    //     component: () => import('@/views/home/about'),
-    //     meta: { title: '关于我', keepAlive: false }
-    //   }
-    // ]
   },
   {
-    path: '/finish',
-    component: () => import('@/views/finish'),
+    path: '/policy',
+    component: () => import('@/views/policy'),
     meta: {
-      title: '完成页',
+      title: '会见须知',
+      keepAlive: false
+    }
+  },
+  {
+    path: '/login',
+    component: () => import('@/views/login'),
+    meta: {
+      title: '登录页',
+      keepAlive: false
+    }
+  },
+  {
+    path: '/list',
+    component: () => import('@/views/list'),
+    meta: {
+      title: '列表页',
+      keepAlive: false
+    }
+  },
+  {
+    path: '/bind',
+    component: () => import('@/views/bind'),
+    meta: {
+      title: '绑定亲属',
+      keepAlive: false
+    }
+  },
+  {
+    path: '/apply',
+    component: () => import('@/views/apply'),
+    meta: {
+      title: '申请页',
+      keepAlive: false
+    }
+  },
+  {
+    path: '/time',
+    component: () => import('@/views/time'),
+    meta: {
+      title: '会见时间',
+      keepAlive: false
+    }
+  },
+  {
+    path: '/success',
+    component: () => import('@/views/success'),
+    meta: {
+      title: '成功页',
       keepAlive: false
     }
   }
