@@ -6,11 +6,9 @@ import 'regenerator-runtime/runtime'
 import Vue from 'vue'
 import App from './App.vue'
 import router from './router'
-import store from './store'
-
+import api from './api'
 // 设置 js中可以访问 $cdn
-import { $cdn } from '@/config'
-Vue.prototype.$cdn = $cdn
+Vue.prototype.$api = api
 
 // 全局引入按需引入UI库 vant
 import '@/plugins/vant'
@@ -26,6 +24,5 @@ Vue.config.productionTip = false
 new Vue({
   el: '#app',
   router,
-  store,
   render: h => h(App)
 })

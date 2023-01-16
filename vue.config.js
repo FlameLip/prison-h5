@@ -1,10 +1,9 @@
 const path = require('path')
-const defaultSettings = require('./src/config/index.js')
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin
 
 const resolve = dir => path.join(__dirname, dir)
 // page title
-const name = defaultSettings.title || 'vue mobile template'
+const name = '视频会见'
 // 生产环境，测试和正式
 const IS_PROD = ['production', 'prod'].includes(process.env.NODE_ENV)
 
@@ -55,14 +54,11 @@ module.exports = defineConfig({
       }
     },
     proxy: {
-      //配置跨域
       '/api': {
-        target: 'http://szdt.daxiaotudou.cn:8899/api',
-        // ws:true,
-        changOrigin: true,
-        pathRewrite: {
-          '^/api': '/'
-        }
+        target: 'http://120.79.53.240:8091',
+        pathRewrite: { '^/api': '' },
+        changeOrigin: true,
+        secure: false //
       }
     }
   },
@@ -76,7 +72,6 @@ module.exports = defineConfig({
         additionalData: `
           @import "assets/css/mixin.scss";
           @import "assets/css/variables.scss";
-          $cdn: "${defaultSettings.$cdn}";
           `
       }
     }

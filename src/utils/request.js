@@ -1,27 +1,25 @@
 import axios from 'axios'
-import store from '@/store'
 import { Toast } from 'vant'
 // 根据环境不同引入不同api地址
-import { baseApi } from '@/config'
+import { getToken, removeToken } from './auth'
+// todo token过期处理
 // create an axios instance
 const service = axios.create({
-  baseURL: baseApi, // url = base api url + request url
+  baseURL: process.env.VUE_APP_BASE_API, // url = base url + request url
   withCredentials: true, // send cookies when cross-domain requests
-  timeout: 10000 // request timeout
+  timeout: 5000, // request timeout
+  headers: { 'Content-Type': 'application/json;charset=utf-8' }
 })
 
-// request拦截器 request interceptor
+// request interceptor
 service.interceptors.request.use(
   config => {
-    // 不传递默认开启loading
-    if (!config.hideloading) {
-      // loading
-      Toast.loading({
-        forbidClick: true
-      })
-    }
-    if (store.getters.token) {
-      config.headers['X-Token'] = ''
+    // do something before request is sent
+    if (getToken()) {
+      // let each request carry token
+      // ['X-Token'] is a custom headers key
+      // please modify it according to the actual situation
+      config.headers['Authorization'] = 'Bearer ' + getToken()
     }
     return config
   },
@@ -31,17 +29,16 @@ service.interceptors.request.use(
     return Promise.reject(error)
   }
 )
-// respone拦截器
+
 service.interceptors.response.use(
   response => {
     Toast.clear()
     const res = response.data
-    if (res.status && res.status !== 200) {
+    if (res.code && res.code !== 0) {
       // 登录超时,重新登录
-      if (res.status === 401) {
-        store.dispatch('FedLogOut').then(() => {
-          location.reload()
-        })
+      if (res.code === 602 || res.code === 603) {
+        removeToken()
+        location.reload()
       }
       return Promise.reject(res || 'error')
     } else {
@@ -54,5 +51,43 @@ service.interceptors.response.use(
     return Promise.reject(error)
   }
 )
+
+/**
+ * get方法，对应get请求
+ * @param {String} url [请求的url地址]
+ * @param {Object} params [请求时携带的参数]
+ */
+export function get(url, params) {
+  return new Promise((resolve, reject) => {
+    service
+      .get(url, {
+        params: params
+      })
+      .then(res => {
+        resolve(res.data)
+      })
+      .catch(err => {
+        reject(err.data)
+      })
+  })
+}
+
+/**
+ * post方法，对应post请求
+ * @param {String} url [请求的url地址]
+ * @param {Object} data [请求时携带的参数]
+ */
+export function post(url, data) {
+  return new Promise((resolve, reject) => {
+    service
+      .post(url, data)
+      .then(res => {
+        resolve(res)
+      })
+      .catch(err => {
+        reject(err)
+      })
+  })
+}
 
 export default service

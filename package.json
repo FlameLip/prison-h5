@@ -1,7 +1,7 @@
 {
-  "name": "prison-meetting",
+  "name": "prison-meeting",
   "version": "2.1.0",
-  "description": "prison booking meetting",
+  "description": "prison booking meeting",
   "author": "Lip <18070568168@163.com>",
   "private": true,
   "scripts": {
