@@ -4,7 +4,7 @@
     <div class="page-content">
       <div class="time-title">
         <div class="now-month">
-          {{ dayjs().startOf('year').format('YYYY') + '年' + dayjs().startOf('month').format('MM') + '月' }}
+          {{ applyDate.date.slice(0, 4) + '年' + applyDate.date.slice(5, 7) + '月' }}
         </div>
         <div class="status-desc">
           <div class="status-item">
@@ -19,19 +19,24 @@
       </div>
       <div class="day-list">
         <ul class="float-box">
-          <li v-for="item in days" :key="item" class="day-item">
-            <div class="day-box">{{ item < 10 ? '0' + item : item }}</div>
-            <div class="week-box">周三</div>
+          <li
+            v-for="(item, index) in timeList"
+            :key="index"
+            @click="clickDay(item, index)"
+            :class="[{ 'can-apply': item.isCanApply === 1, 'now-day': activeIndex === index }]"
+          >
+            <div class="day-box">{{ item.date.split('.')[2] }}</div>
+            <div class="week-box">{{ item.weekday }}</div>
           </li>
         </ul>
       </div>
       <div class="info">
         <div class="circle"></div>
-        <p>会见时间段为上午06:00至晚间23:00，预约成功后会根据当日预约情况为您安排具体会见时间。</p>
+        <p>{{ `会见时间段为上午${startTime}至晚间${endTime}，预约成功后会根据当日预约情况为您安排具体会见时间。` }}</p>
       </div>
     </div>
     <div class="submit-btn">
-      <van-button block type="info" native-type="submit">提交申请</van-button>
+      <van-button block type="info" native-type="submit" @click="submitApply">提交申请</van-button>
     </div>
   </div>
 </template>
@@ -41,17 +46,43 @@ import dayjs from 'dayjs'
 export default {
   data() {
     return {
-      days: '',
-      checked: []
+      startTime: '06:00',
+      endTime: '23:00',
+      timeList: [],
+      activeIndex: -1,
+      applyDate: {
+        date: ''
+      },
+      className: ''
     }
   },
   mounted() {
-    this.getDays()
+    sessionStorage.removeItem('applyDate')
+    this.getUsableDate()
   },
   methods: {
     dayjs,
-    getDays() {
-      this.days = dayjs().daysInMonth()
+    async getUsableDate() {
+      const res = await this.$api.getUsableDate()
+      this.timeList = res.result.list
+      this.startTime = res.result.startTime
+      this.endTime = res.result.endTime
+      this.applyDate = this.timeList[0]
+    },
+    clickDay(item, index) {
+      this.activeIndex = index
+      this.applyDate = item
+      sessionStorage.setItem('applyDate', item.date)
+    },
+    async submitApply() {
+      const memberList = JSON.parse(sessionStorage.getItem('memberList')) || []
+      const res = await this.$api.meetingApply({
+        applyDate: this.applyDate.date,
+        memberList
+      })
+      if (res.code === 0) {
+        this.$router.push('/success')
+      }
     }
   }
 }
@@ -134,6 +165,14 @@ export default {
         line-height: 28px;
         font-weight: 600;
         margin-right: 20px;
+        &.can-apply {
+          border: 1px solid rgba(11, 197, 129, 1);
+          color: #0cc683;
+        }
+        &.now-day {
+          background-image: linear-gradient(-33deg, #06bf7c 0%, #32eda9 100%);
+          color: #fff;
+        }
         :nth-last-of-type(1) {
           margin-right: 0;
         }

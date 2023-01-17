@@ -5,15 +5,49 @@
       <h3>家属信息</h3>
     </div>
     <div class="cell-box">
-      <van-cell title="家属姓名" :border="false" value="张向阳" />
-      <van-cell title="家属关系" :border="false" value="父子" />
-      <van-cell title="所在单位" :border="false" value="深圳监狱" />
+      <van-cell title="家属姓名" :border="false" :value="fxData.fxName" />
+      <van-cell title="家属关系" :border="false" :value="fxData.relation" />
+      <van-cell title="所在单位" :border="false" :value="fxData.prisonName" />
     </div>
     <div class="submit-btn">
-      <van-button block type="info" native-type="submit">绑定亲属</van-button>
+      <van-button block type="info" @click="handleBind" native-type="submit">绑定亲属</van-button>
     </div>
   </div>
 </template>
+<script>
+export default {
+  data() {
+    return {
+      fxData: {
+        fxId: '', //囚号
+        fxName: '', //囚犯姓名
+        relation: '', // 关系
+        prisonName: '' //单位名
+      }
+    }
+  },
+  mounted() {
+    this.getPrisonerInfo()
+  },
+  methods: {
+    async getPrisonerInfo() {
+      const phoneCode = sessionStorage.getItem('phoneCode')
+      const res = await this.$api.getPrisonerInfo({ phoneCode })
+      this.fxData = res.result
+    },
+    async handleBind() {
+      const res = await this.$api.bindPrisoner({
+        phoneCode: sessionStorage.getItem('phoneCode'),
+        vCode: sessionStorage.getItem('vCode'),
+        fxId: this.fxData.fxId
+      })
+      if (res.code === 0) {
+        this.$toast('绑定成功')
+      }
+    }
+  }
+}
+</script>
 
 <style lang="scss" scoped>
 .app-container {

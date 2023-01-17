@@ -6,12 +6,38 @@
       <div>您的申请已提交成功，请耐心等待审核</div>
     </div>
     <div class="cell-box">
-      <van-cell title="家属姓名" :border="false" value="张向阳" />
-      <van-cell title="家属关系" :border="false" value="父子" />
-      <van-cell title="所在单位" :border="false" value="深圳监狱" />
+      <van-cell title="会见人" :border="false" :value="name" />
+      <van-cell title="会见日期" :border="false" :value="applyDate" />
+      <van-cell title="申请人数" :border="false" :value="count + '人'" />
     </div>
   </div>
 </template>
+<script>
+export default {
+  data() {
+    return {
+      timer: null,
+      name: '',
+      count: '',
+      applyDate: ''
+    }
+  },
+  beforeDestroy() {
+    clearTimeout(this.timer)
+  },
+  mounted() {
+    const userInfo = JSON.parse(sessionStorage.getItem('userInfo'))
+    const memberList = JSON.parse(sessionStorage.getItem('memberList'))
+    const applyDate = sessionStorage.getItem('applyDate')
+    this.name = userInfo.name
+    this.count = memberList.length
+    this.applyDate = applyDate
+    this.timer = setTimeout(() => {
+      this.$router.push('/')
+    }, 5000)
+  }
+}
+</script>
 
 <style lang="scss" scoped>
 .app-container {

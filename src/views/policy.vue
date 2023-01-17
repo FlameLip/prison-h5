@@ -25,7 +25,7 @@
       <van-checkbox v-model="checked">我已阅读会见须知，并将严格遵守相关规定</van-checkbox>
     </div>
     <div class="submit-btn">
-      <van-button block type="info" native-type="submit">下一步</van-button>
+      <van-button block type="info" native-type="submit" @click="nextStep">下一步</van-button>
     </div>
   </div>
 </template>
@@ -35,6 +35,13 @@ export default {
   data() {
     return {
       checked: ''
+    }
+  },
+  methods: {
+    nextStep() {
+      if (!this.checked) return this.$toast('请先勾选会见须知')
+      localStorage.setItem('firstTime', 1)
+      this.$router.push('/apply')
     }
   }
 }

@@ -17,7 +17,8 @@ import {
   Dialog,
   Sticky,
   Icon,
-  Uploader
+  Uploader,
+  Image
 } from 'vant'
 Vue.use(Button)
 Vue.use(Cell)
@@ -34,4 +35,5 @@ Vue.use(Dialog)
 Vue.use(Sticky)
 Vue.use(Icon)
 Vue.use(Uploader)
+Vue.use(Image)
 Vue.use(Tabbar).use(TabbarItem)

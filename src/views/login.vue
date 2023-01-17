@@ -35,14 +35,12 @@
 </template>
 
 <script>
-import request from '@/utils/request'
 export default {
   name: 'AppLayout',
   data() {
     return {
       formData: {
-        // phone: '13698039651',
-        phoneCode: '',
+        phoneCode: '13800138001',
         vCode: ''
       },
       timer: null,
@@ -55,20 +53,16 @@ export default {
     clearInterval(this.timer)
   },
   methods: {
-    async onSubmit(values) {
-      const res = await request({
-        url: '/api/insert',
-        method: 'post',
-        data: { ...values, ...{ name: this.formData.name } }
-      })
-      if (res.msg === 'success') {
-        // this.$notify({ type: 'success', message: '提交成功！谢谢您！' })
-        this.$router.push('/finish')
-      } else {
-        this.$notify({ type: 'warning', message: '不好意思，提交失败！请稍后再试！' })
+    async onSubmit() {
+      const res = await this.$api.validVcode(this.formData)
+      if (res.code === 0) {
+        this.$router.push('/bind')
+        sessionStorage.setItem('phoneCode', this.formData.phoneCode)
+        sessionStorage.setItem('vCode', this.formData.vCode)
       }
     },
     handleCode() {
+      this.getVCode()
       const TIME_COUNT = 60
       if (!this.timer) {
         this.count = TIME_COUNT
@@ -83,6 +77,10 @@ export default {
           }
         }, 1000)
       }
+    },
+    async getVCode() {
+      const res = await this.$api.getVcode({ phoneCode: this.formData.phoneCode })
+      console.log(res)
     }
   }
 }
@@ -100,6 +98,7 @@ export default {
       padding: 0;
       margin-bottom: 30px;
       position: relative;
+      height: 100px;
       ::v-deep .van-field__left-icon {
         z-index: 999;
         position: absolute;

@@ -1,7 +1,7 @@
 <template>
   <div class="apply-list-container">
     <div class="list-box" v-if="list.length">
-      <van-list v-model="loading" :finished="finished" finished-text="没有更多了" @load="onLoad">
+      <van-list v-model="loading" :finished="finished" finished-text="没有更多了" @load="getList">
         <ul>
           <li v-for="(item, index) in list" :key="index" class="list-item">
             <div class="apply-title">
@@ -9,7 +9,12 @@
                 {{ item.applyDate }}
                 <span>的申请</span>
               </div>
-              <div class="status">{{ item.statusMsg }}</div>
+              <div
+                class="status"
+                :class="item.status === -1 || item.status === -2 ? 'reject' : item.status === 1 ? 'pass' : ''"
+              >
+                {{ item.statusMsg }}
+              </div>
             </div>
             <div class="apply-info">
               <div>
@@ -48,15 +53,28 @@ export default {
   data() {
     return {
       list: [],
-      loading: false,
+      loading: true,
       finished: false,
-      noDataFlag: false
+      noDataFlag: false,
+      pageOption: {
+        page: 1,
+        pageSize: 10
+      }
     }
   },
+  mounted() {
+    this.getList()
+  },
   methods: {
-    onLoad() {
-      console.log('onLoad')
+    async getList() {
+      const res = await this.$api.getMeetingList(this.pageOption)
       this.loading = false
+      this.pageOption.page++
+      this.list = [...this.list, ...res.result.list]
+      let total = res.result.total
+      if (Math.ceil(total / this.pageOption.pageSize) === this.pageOption.page) {
+        this.finished = true
+      }
     }
   }
 }
@@ -99,6 +117,12 @@ export default {
         letter-spacing: 0;
         line-height: 28px;
         font-weight: 600;
+      }
+      .pass {
+        color: #0cc683;
+      }
+      .reject {
+        color: #ff2a2a;
       }
     }
     .apply-info {

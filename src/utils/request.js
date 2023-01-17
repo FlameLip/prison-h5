@@ -2,7 +2,6 @@ import axios from 'axios'
 import { Toast } from 'vant'
 // 根据环境不同引入不同api地址
 import { getToken, removeToken } from './auth'
-// todo token过期处理
 // create an axios instance
 const service = axios.create({
   baseURL: process.env.VUE_APP_BASE_API, // url = base url + request url
@@ -40,6 +39,7 @@ service.interceptors.response.use(
         removeToken()
         location.reload()
       }
+      Toast(res.msg)
       return Promise.reject(res || 'error')
     } else {
       return Promise.resolve(res)
@@ -48,6 +48,7 @@ service.interceptors.response.use(
   error => {
     Toast.clear()
     console.log('err' + error) // for debug
+    Toast(error)
     return Promise.reject(error)
   }
 )
@@ -64,10 +65,10 @@ export function get(url, params) {
         params: params
       })
       .then(res => {
-        resolve(res.data)
+        resolve(res)
       })
       .catch(err => {
-        reject(err.data)
+        reject(err)
       })
   })
 }

@@ -2,23 +2,29 @@
   <div class="page-container">
     <div class="member-base-info">
       <div class="upload-box">
-        <van-uploader :max-count="1" :after-read="afterRead" />
+        <van-uploader :preview-full-image="false" :max-count="1" :after-read="afterRead">
+          <van-image :src="profilePhotoImgUrl" />
+        </van-uploader>
       </div>
       <div class="base-box">
         <div>
           <div class="info-item">
             <span>姓名</span>
-            <span>张峰峰</span>
+            <span>{{ userInfo.name }}</span>
           </div>
           <div class="info-item">
             <span>手机</span>
-            <span>13784372318</span>
+            <span>{{ userInfo.phoneCode }}</span>
           </div>
+          <!-- <div class="info-item">
+            <span>身份证号</span>
+            <span>{{ userInfo.pid }}</span>
+          </div> -->
         </div>
-        <div class="edit-box">
+        <!-- <div class="edit-box">
           <van-icon name="edit" />
           <span>编辑信息</span>
-        </div>
+        </div> -->
       </div>
     </div>
     <div class="fx-info">
@@ -27,15 +33,15 @@
         <h3>家属信息</h3>
       </div>
       <div class="cell-box">
-        <van-cell title="家属姓名" :border="false" value="张向阳" />
-        <van-cell title="家属关系" :border="false" value="父子" />
-        <van-cell title="所在单位" :border="false" value="深圳监狱" />
+        <van-cell title="家属姓名" :border="false" :value="userInfo.fxName" />
+        <van-cell title="家属关系" :border="false" :value="userInfo.relation" />
+        <van-cell title="所在单位" :border="false" :value="userInfo.prisonName" />
       </div>
     </div>
     <div class="submit-btn">
-      <van-button block type="info" native-type="submit">申请会见</van-button>
+      <van-button block type="info" native-type="submit" @click="goApply">申请会见</van-button>
     </div>
-    <div class="apply-list-box">
+    <div class="apply-list-box" @click="$router.push('/list')">
       <span>查看我的申请记录</span>
       <van-icon name="arrow" />
     </div>
@@ -45,12 +51,37 @@
 <script>
 export default {
   data() {
-    return {}
+    return {
+      userInfo: {},
+      profilePhotoImgUrl: ''
+    }
+  },
+  mounted() {
+    this.getUserInfo()
+    sessionStorage.removeItem('userInfo')
   },
   methods: {
-    afterRead(file) {
-      // 此时可以自行将文件上传至服务器
-      console.log(file)
+    // todo 第一绑定状态，显示policy页面逻辑
+    async afterRead(file) {
+      const formData = new FormData()
+      formData.append('img', file.file)
+      const res = await this.$api.uploadImage(formData)
+      let imgId = res.result.imgId
+      this.profilePhotoImgUrl = res.result.imgUrl
+      await this.$api.modifyPhoto({ imgId })
+    },
+    async getUserInfo() {
+      const res = await this.$api.getUserInfo()
+      this.userInfo = res.result
+      sessionStorage.setItem('userInfo', JSON.stringify(this.userInfo))
+      if (res.result.profilePhotoUrl) this.profilePhotoImgUrl = res.result.profilePhotoUrl
+    },
+    goApply() {
+      if (!localStorage.getItem('firstTime')) {
+        this.$router.push('/policy')
+      } else {
+        this.$router.push('/apply')
+      }
     }
   }
 }
@@ -71,6 +102,14 @@ export default {
       ::v-deep .van-uploader__upload {
         width: 196px;
         height: 274px;
+      }
+      ::v-deep .van-image {
+        width: 196px;
+        height: 274px;
+        img {
+          width: 196px;
+          height: 274px;
+        }
       }
     }
     .base-box {
