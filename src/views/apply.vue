@@ -4,6 +4,13 @@
     <div class="apply-info-container">
       <ul class="member-container">
         <li class="member-item" v-for="(item, index) in memberList" :key="index">
+          <van-icon
+            name="delete-o"
+            v-show="!(index === 0 && memberList.length === 1)"
+            color="#ee0a24"
+            class="delete-icon"
+            @click="deleteMember(index)"
+          />
           <div class="avatar-box">
             <van-uploader :max-count="1" :after-read="file => afterRead(file, item, 'profilePhotoImg')">
               <div class="avartar-img" v-if="!item.profilePhotoImgUrl">
@@ -20,6 +27,7 @@
               v-model="item.pid"
               label="身份证号"
               input-align="right"
+              placeholder="请输出身份证号码"
               @input="value => handleInput(value, item)"
             />
             <van-cell title="姓名" :value="item.name" />
@@ -72,8 +80,8 @@ export default {
           pidZImgId: '', // 身份证正面
           pidZImgUrl: '', // 身份证正面
           pidBImgId: '', // 身份证背面
-          pidBImgUrl: '', // 身份证背面
-          assistImgId: '' // 辅助资料证明图片
+          pidBImgUrl: '' // 身份证背面
+          // assistImgId: '' // 辅助资料证明图片
         }
       ]
     }
@@ -83,8 +91,9 @@ export default {
   },
   methods: {
     async handleInput(value, item) {
-      // 13为联调身份证长度
-      if (value.length === 15 || value.length === 18 || value.length === 13) {
+      const regx =
+        /^(^[1-9]\d{7}((0\d)|(1[0-2]))(([0|1|2]\d)|3[0-1])\d{3}$)|(^[1-9]\d{5}[1-9]\d{3}((0\d)|(1[0-2]))(([0|1|2]\d)|3[0-1])((\d{4})|\d{3}[Xx])$)$/
+      if (regx.test(value)) {
         const res = await this.$api.memberCheck({ pid: value })
         item.name = res.result.name
         item.relationLv2 = res.result.relationLv2
@@ -107,11 +116,24 @@ export default {
         pidZImgId: '', // 身份证正面
         pidZImgUrl: '', // 身份证正面
         pidBImgId: '', // 身份证背面
-        pidBImgUrl: '', // 身份证背面
-        assistImgId: '' // 辅助资料证明图片
+        pidBImgUrl: '' // 身份证背面
+        // assistImgId: '' // 辅助资料证明图片
       })
     },
+    deleteMember(index) {
+      this.$dialog
+        .confirm({
+          title: '提示',
+          message: '确定删除此家属信息吗？删除后需要重新填入信息！'
+        })
+        .then(() => this.memberList.splice(index, 1))
+    },
     goTime() {
+      let emptyKey = ''
+      this.memberList.forEach(item => {
+        emptyKey = Object.keys(item).find(key => !item[key])
+      })
+      if (emptyKey) return this.$toast('请先完善家属信息！')
       const arr = this.memberList.map(item => {
         return {
           pid: item.pid,
@@ -146,6 +168,13 @@ export default {
       .member-item {
         background-color: #fff;
         margin-bottom: 20px;
+        position: relative;
+        .delete-icon {
+          position: absolute;
+          right: 18px;
+          top: 12px;
+          font-size: 45px;
+        }
         .avatar-box {
           width: 100%;
           height: 368px;
@@ -198,7 +227,7 @@ export default {
             padding: 10px 40px;
             overflow: hidden;
             color: #323233;
-            font-size: 14px;
+            font-size: 30px;
             line-height: 68px;
             height: 68px;
             background-color: #fff;

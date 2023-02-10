@@ -49,6 +49,7 @@
 </template>
 
 <script>
+import { setToken, getToken } from '@/utils/auth'
 export default {
   data() {
     return {
@@ -56,12 +57,69 @@ export default {
       profilePhotoImgUrl: ''
     }
   },
-  mounted() {
+  async mounted() {
+    // this.devAuthorize()
+    this.getCodeAndState()
+    if (!getToken()) {
+      await this.webAuthorize()
+    }
     this.getUserInfo()
-    sessionStorage.removeItem('userInfo')
   },
   methods: {
-    // todo 第一绑定状态，显示policy页面逻辑
+    // todo 处理页面间跳转数据保留问题，主要观察微信webview会不会做缓存
+    /*
+      由于后端获取access_token（微信token），前端授权相对简单
+      1、公众号跳转路由会在微信开发者工具里配置（根据环境替换ip端口等）http://wx-api.ruishi-td.com/wx/authorize http://120.79.53.240/wx/authorize
+      2、从url中获取到 state和code
+      3、请求后台接口获取业务token
+    */
+    getUrlCode(name) {
+      return (
+        decodeURIComponent(
+          (new RegExp('[?|&]' + name + '=' + '([^&;]+?)(&|#|;|$)').exec(location.href) || ['', ''])[1].replace(
+            /\+/g,
+            '%20'
+          )
+        ) || null
+      )
+    },
+    getCodeAndState() {
+      this.code = this.getUrlCode('code')
+      this.state = this.getUrlCode('state')
+    },
+    // 此处获取的是后端接口的token，微信的access_token 后端实现
+    async webAuthorize() {
+      if (!this.code) return
+      const res = await this.$api.webAuthorize({
+        code: this.code,
+        state: this.state
+      })
+      let token = res.result.token
+      setToken(token)
+      let bindStatus = res.result.bindStatus
+      sessionStorage.setItem('bindStatus', bindStatus)
+      // bindStatus 1，已注册手机号 0，未注册手机号
+      if (bindStatus === 0) {
+        this.$router.push('/login')
+      }
+    },
+    // 本地开发，跳过微信授权获取业务token
+    async devAuthorize() {
+      const res = await this.$api.devAuthorize()
+      let token = res.result.token
+      setToken(token)
+      let bindStatus = res.result.bindStatus
+      sessionStorage.setItem('bindStatus', bindStatus)
+      if (bindStatus === 0) {
+        this.$router.push('/')
+      }
+    },
+    async getUserInfo() {
+      const res = await this.$api.getUserInfo()
+      this.userInfo = res.result
+      sessionStorage.setItem('userInfo', JSON.stringify(this.userInfo))
+      if (res.result.profilePhotoUrl) this.profilePhotoImgUrl = res.result.profilePhotoUrl
+    },
     async afterRead(file) {
       const formData = new FormData()
       formData.append('img', file.file)
@@ -69,12 +127,6 @@ export default {
       let imgId = res.result.imgId
       this.profilePhotoImgUrl = res.result.imgUrl
       await this.$api.modifyPhoto({ imgId })
-    },
-    async getUserInfo() {
-      const res = await this.$api.getUserInfo()
-      this.userInfo = res.result
-      sessionStorage.setItem('userInfo', JSON.stringify(this.userInfo))
-      if (res.result.profilePhotoUrl) this.profilePhotoImgUrl = res.result.profilePhotoUrl
     },
     goApply() {
       if (!localStorage.getItem('firstTime')) {

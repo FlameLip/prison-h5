@@ -2,7 +2,6 @@ import { post, get } from '@/utils/request'
 
 export default {
   devAuthorize: data => get('/wx/account-token-dev-gen', data), // 开发时拿token
-  wxAuthorize: data => get('/wx/authorize', data), // 微信用户授权
   webAuthorize: data => post('/wx/account-token', data), // 通过微信用户授权，获取web页面token
   getUserInfo: data => post('/wx/bind-user-info', data),
   getVcode: data => post('/wx/vcode-req', data),

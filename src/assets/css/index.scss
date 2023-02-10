@@ -7,7 +7,11 @@ body .app {
   font-family: PingFangSC-Regular, Arial, Helvetica, 'STHeiti STXihei', 'Microsoft YaHei', Tohoma, sans-serif !important;
   background-color: $background-color;
 }
-h1,h2,h3,h4,h5 {
+h1,
+h2,
+h3,
+h4,
+h5 {
   margin: 0;
   padding: 0;
 }
@@ -16,7 +20,6 @@ h1,h2,h3,h4,h5 {
   margin-bottom: 40px;
   box-sizing: border-box;
   font-size: 30px;
-  height: 30px;
   .van-cell__title {
     height: 36px;
     line-height: 36px;
@@ -44,6 +47,27 @@ h1,h2,h3,h4,h5 {
   }
 }
 
+.van-toast {
+  font-size: 28px;
+  line-height: 48px;
+}
 .van-toast--text {
-  padding: 28px 28px
+  padding: 28px 28px;
+}
+.van-dialog {
+  font-size: 28px;
+  width: 72%;
+  .van-dialog__message {
+    font-size: 28px;
+    line-height: 48px;
+    padding: 32px 48px;
+  }
+  .van-dialog__footer {
+    padding: 12px 0;
+  }
+  .van-button__text,
+  .van-button {
+    font-size: 28px;
+    line-height: 48px;
+  }
 }

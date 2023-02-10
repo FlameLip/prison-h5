@@ -1,7 +1,7 @@
 <template>
   <div class="apply-list-container">
     <div class="list-box" v-if="list.length">
-      <van-list v-model="loading" :finished="finished" finished-text="没有更多了" @load="getList">
+      <van-list v-model="loading" :finished="finished" finished-text="" @load="getList">
         <ul>
           <li v-for="(item, index) in list" :key="index" class="list-item">
             <div class="apply-title">
@@ -23,7 +23,7 @@
               </div>
               <div>
                 <span>申请人数：</span>
-                <span>{{ item.count }}人</span>
+                <span>{{ item.memberCount }}人</span>
               </div>
               <div>
                 <span>会见日期：</span>
@@ -53,7 +53,7 @@ export default {
   data() {
     return {
       list: [],
-      loading: true,
+      loading: false,
       finished: false,
       noDataFlag: false,
       pageOption: {
@@ -66,15 +66,25 @@ export default {
     this.getList()
   },
   methods: {
-    async getList() {
-      const res = await this.$api.getMeetingList(this.pageOption)
-      this.loading = false
-      this.pageOption.page++
-      this.list = [...this.list, ...res.result.list]
-      let total = res.result.total
-      if (Math.ceil(total / this.pageOption.pageSize) === this.pageOption.page) {
-        this.finished = true
-      }
+    // todo  u
+    getList() {
+      this.$api
+        .getMeetingList(this.pageOption)
+        .then(res => {
+          this.loading = false
+          this.list = [...this.list, ...res.result.list]
+          this.noDataFlag = !!this.list.length
+          let total = res.result.total
+          if (this.list.length >= total) {
+            this.finished = true
+          } else {
+            this.pageOption.page++
+          }
+        })
+        .catch(() => {
+          this.noDataFlag = true
+          this.loading = false
+        })
     }
   }
 }

@@ -43,6 +43,7 @@ export default {
       })
       if (res.code === 0) {
         this.$toast('绑定成功')
+        this.$router.push('/')
       }
     }
   }
